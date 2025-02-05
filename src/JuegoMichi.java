@@ -2,7 +2,8 @@
  *
  * utiliza esta ayuda
  * int numero=(int) (Math.random()*3)+1;
- * System.out.println(numero);*/
+ * System.out.println(numero);
+ * */
 
 import java.util.Scanner;
 
