@@ -8,38 +8,39 @@
 import java.util.Scanner;
 
 public class JuegoMichi {
-    private char[][] tablero = new char[3][3]; // Mala práctica
-    private Scanner scanner = new Scanner(System.in); //Ídem
+    private static final char VACIO = ' ';
+    private static final char USUARIO = 'X';
+    private static final char ORDENADOR = 'O';
+    private char[][] tablero = new char[3][3];
     private EstadoJuego estadoJuego = EstadoJuego.EN_CURSO;
 
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         JuegoMichi juego = new JuegoMichi();
-        juego.iniciarJuego();
-    }
-
-    private void iniciarJuego() {
-        iniciarTablero();
-        mostrarTablero();
-        do {
-            ejecutarTurno('X', EstadoJuego.USUARIO_GANA);
-            if (estadoJuego == EstadoJuego.EN_CURSO) {
-                ejecutarTurno('O', EstadoJuego.ORDENADOR_GANA);
-            }
-        } while (estadoJuego == EstadoJuego.EN_CURSO);
-        mostrarResultado();
+        juego.iniciarJuego(scanner);
         scanner.close();
     }
 
-    // 👌
+    private void iniciarJuego(Scanner scanner) {
+        iniciarTablero();
+        mostrarTablero();
+        do {
+            ejecutarTurno(USUARIO, EstadoJuego.USUARIO_GANA, scanner);
+            if (estadoJuego == EstadoJuego.EN_CURSO) {
+                ejecutarTurno(ORDENADOR, EstadoJuego.ORDENADOR_GANA, scanner);
+            }
+        } while (estadoJuego == EstadoJuego.EN_CURSO);
+        mostrarResultado();
+    }
+
     private void iniciarTablero() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                tablero[i][j] = ' ';
+                tablero[i][j] = VACIO;
             }
         }
     }
 
-    // 👌
     private void mostrarTablero() {
         System.out.println("-------------");
         for (int i = 0; i < 3; i++) {
@@ -52,7 +53,7 @@ public class JuegoMichi {
         }
     }
 
-    private void turnoUsuario() {
+    private void turnoUsuario(Scanner scanner) {
         int fila, columna;
         boolean posicionValida;
         do {
@@ -64,11 +65,11 @@ public class JuegoMichi {
                 System.out.println("Esta posición no es valida intenta nuevamente");
             }
         } while (!posicionValida);
-        tablero[fila][columna] = 'X';
+        tablero[fila][columna] = USUARIO;
     }
 
     private boolean esMovimientoValido(int fila, int columna) {
-        return fila >= 0 && fila < 3 && columna >= 0 && columna < 3 && tablero[fila][columna] == ' ';
+        return fila >= 0 && fila < 3 && columna >= 0 && columna < 3 && tablero[fila][columna] == VACIO;
     }
 
     private void turnoOrdenador() {
@@ -76,8 +77,8 @@ public class JuegoMichi {
         do {
             fila = (int) (Math.random() * 3);
             columna = (int) (Math.random() * 3);
-        } while (tablero[fila][columna] != ' ');
-        tablero[fila][columna] = 'O';
+        } while (tablero[fila][columna] != VACIO);
+        tablero[fila][columna] = ORDENADOR;
         System.out.println("El ordenador jugó en posición: " + (fila + 1) + ", " + (columna + 1));
     }
 
@@ -100,14 +101,15 @@ public class JuegoMichi {
     }
 
     private boolean tableroLleno() {
+        int contador = 0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (tablero[i][j] == ' ') {
-                    return false;
+                if (tablero[i][j] != VACIO) {
+                    contador++;
                 }
             }
         }
-        return true;
+        return contador == 9;
     }
 
     private void mostrarResultado() {
@@ -118,12 +120,11 @@ public class JuegoMichi {
         } else {
             System.out.println("EMPATE!!!");
         }
-        scanner.close();
     }
 
-    private void ejecutarTurno(char simbolo, EstadoJuego estadoGanador) {
-        if (simbolo == 'X') {
-            turnoUsuario();
+    private void ejecutarTurno(char simbolo, EstadoJuego estadoGanador, Scanner scanner) {
+        if (simbolo == USUARIO) {
+            turnoUsuario(scanner);
         } else {
             turnoOrdenador();
         }
